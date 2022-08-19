@@ -96,7 +96,7 @@ contract ExploitTheRewarder {
 ```
 
 ## Explanation
-1. Borrow all the DVT tokens from the flashpool using a smartcontract owned by attacke
+1. Borrow all the DVT tokens from the flashpool using a smartcontract owned by attacker
 2. Deposit them and receive rewards to the attacker smartcontract
 3. Since the objective of the task is to claim rewards for the attacker, transfer the received rewards from the attacker smart contract
 4. Withdraw the deposited DVT tokens and return them to the flashpool.
