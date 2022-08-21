@@ -30,7 +30,7 @@ The same token used to manage governance can be flashloaned.
 ## Exploit
 
 - ExploitSelfie.sol
-```.sol
+```sol
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
@@ -95,7 +95,7 @@ contract ExploitSelfie {
 ```
 
 - selfie.challenge.js
-```.js
+```js
     it('Exploit', async function () {
 
         /** CODE YOUR EXPLOIT HERE */

@@ -12,7 +12,7 @@ Need to understand the relationship between the tokens and the pools.
 The flash loan tokens can be used to claim rewards
 
 ## Exploit
-```.sol
+```sol
 // ExploitTheRewarder.sol
 // SPDX-License-Identifier: MIT
 
@@ -73,7 +73,7 @@ contract ExploitTheRewarder {
 }
 ```
 
-```.js
+```js
 ...
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
